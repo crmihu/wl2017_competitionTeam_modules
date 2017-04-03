@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.DownloadButton;
 import org.vaadin.viritin.fields.MDateField;
 import org.vaadin.viritin.fields.MTable;
-import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -47,10 +46,9 @@ public class VestiarEventView extends VerticalLayout implements View {
 
     private DateField vestiarDate = new MDateField();
     private Button dailyPdfDownload ;
-    private Button allPdfDownload ;
     private MTable<Evenimente> list = new MTable<>(Evenimente.class)
-            .withProperties("caption", "event_location", "start")
-            .withColumnHeaders("Team", "Location", "Start")
+            .withProperties("caption", "event_location", "start", "end")
+            .withColumnHeaders("Team", "Location", "Start", "End")
             .setSortableProperties("Start")
             .withFullWidth();
 
@@ -66,13 +64,6 @@ public class VestiarEventView extends VerticalLayout implements View {
                 out -> service.writeDailyVestiarAsPdf(out, vestiarDate.getValue()))
                 .setFileName(
                         "VestiaireTeam_"+df.format(vestiarDate.getValue())+".pdf")
-                .withIcon(FontAwesome.FILE_PDF_O)
-                .withStyleName(ValoTheme.BUTTON_ICON_ONLY);
-
-        allPdfDownload = new DownloadButton(
-                out -> service.writeAllVestiaireAsPdf(out))
-                .setFileName(
-                        "VestiaireTeam.pdf")
                 .withIcon(FontAwesome.FILE_PDF_O)
                 .withStyleName(ValoTheme.BUTTON_ICON_ONLY);
 
@@ -98,8 +89,7 @@ public class VestiarEventView extends VerticalLayout implements View {
 
         addComponent(
                 new MVerticalLayout(
-                        new MHorizontalLayout(new Label("Select the Event Date"), vestiarDate),
-                        new MHorizontalLayout(dailyPdfDownload, new MLabel(" - Download the daily planning"), allPdfDownload, new MLabel(" - Download the complete planning")),
+                        new MHorizontalLayout(new Label("Select the Event Date"), vestiarDate, dailyPdfDownload),
                         list
                 ).expand(list)
         );
